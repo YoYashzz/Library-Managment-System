@@ -50,6 +50,17 @@ class LibraryManagementSystem:
             del self.issued_books[book_id]
         self.save_data()
         return True, "Book returned successfully!"
+
+    def delete_book(self, book_id):
+        if book_id not in self.books:
+            return False, "Book ID not found!"
+        
+        del self.books[book_id]
+        if book_id in self.issued_books:
+            del self.issued_books[book_id]
+            
+        self.save_data()
+        return True, "Book deleted successfully!"
     
     def get_all_books(self):
         return self.books
@@ -88,6 +99,11 @@ def issue_book():
 def return_book():
     data = request.json
     success, msg = library.return_book(data.get('id'))
+    return jsonify({"success": success, "message": msg})
+
+@app.route('/api/books/<book_id>', methods=['DELETE'])
+def api_delete_book(book_id):
+    success, msg = library.delete_book(book_id)
     return jsonify({"success": success, "message": msg})
 
 if __name__ == '__main__':

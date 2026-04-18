@@ -66,8 +66,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td><strong>${book.title}</strong></td>
                 <td>${book.author}</td>
                 <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                <td><button class="btn-delete" title="Delete Book" onclick="deleteBook('${id}')">🗑️</button></td>
             `;
             tbody.appendChild(tr);
+        }
+    };
+
+    window.deleteBook = async (id) => {
+        if (!confirm(`Are you sure you want to delete book ${id}?`)) return;
+        
+        try {
+            const res = await fetch(`/api/books/${id}`, {
+                method: 'DELETE'
+            });
+            const result = await res.json();
+            
+            showToast(result.message, !result.success);
+            if (result.success) {
+                fetchBooks();
+            }
+        } catch (error) {
+            console.error('Failed to delete book', error);
+            showToast('Failed to connect to server', true);
         }
     };
 
